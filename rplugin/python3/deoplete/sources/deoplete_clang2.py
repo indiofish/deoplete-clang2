@@ -13,6 +13,7 @@ import subprocess
 
 from itertools import chain
 from urllib.request import urlopen
+from deoplete.util import getlines
 
 from .base import Base
 
@@ -154,9 +155,9 @@ class Source(Base):
             neomake_flags = set(cmd + flags)
             if self.last_neomake_flags ^ neomake_flags:
                 self.last_neomake_flags = neomake_flags
-                self.nvim.async_call(lambda n, m:
-                                     n.eval('clang2#set_neomake_cflags(%r)' % m),
-                                     self.nvim, cmd + flags)
+                # self.nvim.async_call(lambda n, m:
+                #                     n.eval('clang2#set_neomake_cflags(%r)' % m),
+                #                     self.nvim, cmd + flags)
 
     def get_complete_position(self, context):
         m = re.search(r'^\s*#(?:include|import)\s+["<]', context['input'])
@@ -635,7 +636,8 @@ class Source(Base):
             return self.scope_completions
 
         buf = self.nvim.current.buffer
-        src = buf[:]
+        # src = buf[:]
+        src = getlines(self.nvim)
         max_lines = context['vars'].get(
             'deoplete#sources#clang#preproc_max_lines', 50)
         if max_lines:
